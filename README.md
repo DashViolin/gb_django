@@ -1,1 +1,1 @@
-# gb_django
+# BrainiacLMS
