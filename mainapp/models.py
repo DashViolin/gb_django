@@ -63,7 +63,7 @@ class Lessons(MainappBaseModel):
 
 
 class Teachers(MainappBaseModel):
-    courses = models.ManyToManyField(Courses)
+    course = models.ManyToManyField(Courses)
     name_first = models.CharField(max_length=128, verbose_name="Name")
     name_second = models.CharField(max_length=128, verbose_name="Surname")
     day_birth = models.DateField(default=False)
@@ -133,84 +133,6 @@ contacts_data = json.loads(
     "phone": "+7-999-33-33333",
     "email": "geeklab@msk.ru",
     "address": "Красная площадь, 7, Москва, Россия"
-  }
-]"""
-)
-
-news = json.loads(
-    """
-[
-  {
-    "title": "Интересаня новость 1",
-    "content": "<a href=\\"/mainapp/search-in-google?param=All+work+and+no+play+makes+Jack+a+dull+boy\\" target=\\"_blank\\">All work and no play makes Jack a dull boy</a>\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\n"
-  },
-  {
-    "title": "Интересаня новость 2",
-    "content": "All work and no play makes Jack a dull boy\\n<a href=\\"/mainapp/search-in-google?param=сияние+фильм\\" target=\\"_blank\\">All work and no play makes Jack a dull boy</a>\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\n"
-  },
-  {
-    "title": "Интересаня новость 3",
-    "content": "All work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\n"
-  },
-  {
-    "title": "Интересаня новость 4",
-    "content": "All work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\n"
-  },
-  {
-    "title": "Интересаня новость 5",
-    "content": "All work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\n"
-  },
-  {
-    "title": "Интересаня новость 6",
-    "content": "All work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\n"
-  },
-  {
-    "title": "Интересаня новость 7",
-    "content": "All work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\n"
-  },
-  {
-    "title": "Интересаня новость 8",
-    "content": "All work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\n"
-  },
-  {
-    "title": "Интересаня новость 9",
-    "content": "All work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\n"
-  },
-  {
-    "title": "Интересаня новость 10",
-    "content": "All work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\n"
-  },
-  {
-    "title": "Интересаня новость 11",
-    "content": "All work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\n"
-  },
-  {
-    "title": "Интересаня новость 12",
-    "content": "All work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\n"
-  },
-  {
-    "title": "Интересаня новость 13",
-    "content": "All work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\n"
-  },
-  {
-    "title": "Интересаня новость 14",
-    "content": "All work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\n"
-  },
-  {
-    "title": "Интересаня новость 15",
-    "content": "All work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\n"
-  },
-  {
-    "title": "Интересаня новость 16",
-    "content": "All work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\n"
-  },
-  {
-    "title": "Интересаня новость 17",
-    "content": "All work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\n"
-  },
-  {
-    "title": "Интересаня новость 18",
-    "content": "All work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\nAll work and no play makes Jack a dull boy\\n"
   }
 ]"""
 )

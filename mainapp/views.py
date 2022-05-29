@@ -1,79 +1,83 @@
-from datetime import datetime
 from math import ceil
+from typing import Any, Dict
 
+from django.shortcuts import get_object_or_404
 from django.views.generic import RedirectView, TemplateView
 
-from mainapp.models import contacts_data, news
+from mainapp import models as mainapp_models
 
 
 class MainPageView(TemplateView):
     template_name: str = "mainapp/index.html"
 
-    def get_context_data(self, **kwargs: any) -> dict[str, any]:
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Главная"
-        return context
-
 
 class LoginPageView(TemplateView):
     template_name: str = "mainapp/login.html"
-
-    def get_context_data(self, **kwargs: any) -> dict[str, any]:
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Авторизация"
-        return context
-
-
-class NewsPageView(TemplateView):
-    template_name: str = "mainapp/news.html"
-    news_count = 5
-
-    def get_context_data(self, page: int = 0, **kwargs: any) -> dict[str, any]:
-        context = super().get_context_data(**kwargs)
-        self.news_offset = (page - 1) * self.news_count if page else 0
-        context["title"] = "Новости"
-        context["news"] = news[self.news_offset : self.news_offset + self.news_count]
-        context["pages"] = range(1, ceil(len(news) / self.news_count) + 1)
-        context["date_time"] = datetime.now()
-        return context
-
-
-class NewsPageWithPaginatorView(NewsPageView):
-    def get_context_data(self, page: int, **kwargs: any) -> dict[str, any]:
-        context = super().get_context_data(page=page, **kwargs)
-        return context
-
-
-class CoursesPageView(TemplateView):
-    template_name: str = "mainapp/courses_list.html"
-
-    def get_context_data(self, **kwargs: any) -> dict[str, any]:
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Курсы"
-        return context
 
 
 class DocSitePageView(TemplateView):
     template_name: str = "mainapp/doc_site.html"
 
-    def get_context_data(self, **kwargs: any) -> dict[str, any]:
+
+class NewsPageView(TemplateView):
+    template_name: str = "mainapp/news.html"
+    news_per_page = 5
+
+    def get_context_data(self, **kwargs) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["title"] = "Документация"
+        news_count = mainapp_models.News.objects.all().count()
+        pages_count = ceil(news_count / self.news_per_page)
+        page = int(self.request.GET.get("page", default="1"))
+        page = page if page > 0 else 1
+        page = page if page <= pages_count else pages_count
+        offset = (page - 1) * self.news_per_page
+        news = mainapp_models.News.objects.all()
+        context["pages"] = range(1, pages_count + 1)
+        context["news_qs"] = news[offset : offset + self.news_per_page]
+        context["current_page"] = page
+        return context
+
+
+class NewsDetailView(TemplateView):
+    template_name: str = "mainapp/news_detail.html"
+
+    def get_context_data(self, pk=None, **kwargs) -> Dict[str, Any]:
+        context = super().get_context_data(pk=pk, **kwargs)
+        context["news_object"] = get_object_or_404(mainapp_models.News, pk=pk)
+        return context
+
+
+class CoursesListView(TemplateView):
+    template_name: str = "mainapp/courses.html"
+
+    def get_context_data(self, **kwargs) -> Dict[str, Any]:
+        context = super(CoursesListView, self).get_context_data(**kwargs)
+        context["objects"] = mainapp_models.Courses.objects.all()[:7]
+        return context
+
+
+class CoursesDetailView(TemplateView):
+    template_name: str = "mainapp/courses_detail.html"
+
+    def get_context_data(self, pk=None, **kwargs) -> Dict[str, Any]:
+        context = super(CoursesDetailView, self).get_context_data(**kwargs)
+        context["course_object"] = get_object_or_404(mainapp_models.Courses, pk=pk)
+        context["lessons"] = mainapp_models.Lessons.objects.filter(course=context["course_object"])
+        context["teachers"] = mainapp_models.Teachers.objects.filter(course=context["course_object"])
         return context
 
 
 class ContactsPageView(TemplateView):
     template_name: str = "mainapp/contacts.html"
 
-    def get_context_data(self, **kwargs: any) -> dict[str, any]:
+    def get_context_data(self, **kwargs: any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["title"] = "Контакты"
-        context["data"] = contacts_data
+        context["data"] = mainapp_models.contacts_data
         return context
 
 
 class GoogleRedirectView(RedirectView):
-    def get_redirect_url(self, *args, **kwargs):
+    def get_redirect_url(self, *args, **kwargs) -> str | None:
         domain = "https://www.google.com"
         param = self.request.GET["param"]
         self.url = f"{domain}/search?q={param}"

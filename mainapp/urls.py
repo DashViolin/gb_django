@@ -13,9 +13,11 @@ urlpatterns = [
     path("index", views.MainPageView.as_view(), name="index"),
     path("login", views.LoginPageView.as_view(), name="login"),
     path("news", views.NewsPageView.as_view(), name="news"),
-    path("news/<int:page>", views.NewsPageWithPaginatorView.as_view(), name="news_paginator"),
-    path("courses", views.CoursesPageView.as_view(), name="courses"),
-    path("doc-site", views.DocSitePageView.as_view(), name="doc-site"),
+    path("news/<int:pk>", views.NewsDetailView.as_view(), name="news_detail"),
+    path("courses", views.CoursesListView.as_view(), name="courses"),
+    path("courses/<int:pk>/", views.CoursesDetailView.as_view(), name="courses_detail"),
+    path("doc_site", views.DocSitePageView.as_view(), name="doc_site"),
     path("contacts", views.ContactsPageView.as_view(), name="contacts"),
     path("search-in-google", views.GoogleRedirectView.as_view(), name="search_in_google"),
+    # courses_detail
 ]
