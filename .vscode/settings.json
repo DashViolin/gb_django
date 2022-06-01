@@ -1,6 +1,6 @@
 {
     "python.formatting.provider": "black",
-    "python.formatting.blackArgs": ["-S, --line-length", "110"],
+    "python.formatting.blackArgs": ["-S, --line-length", "120"],
     "[html][css][sass][javascript]": {
         "editor.tabSize": 2
     },
