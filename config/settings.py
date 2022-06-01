@@ -36,11 +36,7 @@ SECRET_KEY = os.environ.get("DJANGO_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    "0.0.0.0",
-    "localhost",
-    "gb",
-]
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS")
 
 
 # Application definition
@@ -52,6 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "markdownify.apps.MarkdownifyConfig",
     "mainapp",
 ]
 

@@ -20,7 +20,11 @@
     <!-- FontAwesome -->
     <link rel="stylesheet" href="{% static 'css/fontawesome.all.min.css' %}">
 
-    <title>{{ title }}</title>
+    <title>
+        {% block title %}
+        Welcome to Braniac!
+        {% endblock title %}
+    </title>
 </head>
 
 <body>
