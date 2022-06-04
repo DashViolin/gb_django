@@ -8,41 +8,22 @@ from django.core.mail import send_mail
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-# class AuthappModelManager(UserManager):
-#     def get_queryset(self):
-#         return super().get_queryset().filter(deleted=False)
-
-
-# class AuthappBaseModel(models.Model):
-#     objects = AuthappModelManager()
-
-#     created = models.DateTimeField(auto_now_add=True, verbose_name="Created", editable=False)
-#     updated = models.DateTimeField(auto_now=True, verbose_name="Updated", editable=False)
-#     deleted = models.BooleanField(default=False, verbose_name="Deleted")
-
-#     def delete(self, *args):
-#         self.deleted = True
-#         self.save()
-
-#     def restore(self, *args):
-#         self.deleted = False
-#         self.save()
-
-#     class Meta:
-#         abstract = True
-
 
 def users_avatars_path(instance, filename):
-    # file will be uploaded to
-    #   MEDIA_ROOT / user_<username> / avatars / <filename>
+    # file will be uploaded to MEDIA_ROOT / user_<username> / avatars / <filename>
     num = int(time() * 1000)
     suff = Path(filename).suffix
-    return "user_{0}/avatars/{1}".format(instance.username, f"pic_{num}{suff}")
+    return f"user_{instance.username}/avatars/pic_{num}{suff}"
+
+
+class CaseInsensitiveUserManager(UserManager):
+    def get_by_natural_key(self, username):
+        return self.get(**{self.model.USERNAME_FIELD + "__iexact": username})
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     username_validator = ASCIIUsernameValidator()
-    objects = UserManager()
+    objects = CaseInsensitiveUserManager()
 
     EMAIL_FIELD = "email"
     USERNAME_FIELD = "username"
