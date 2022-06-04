@@ -31,19 +31,27 @@
 
     {% include 'includes/main_menu.html' %}
 
+    {% block messages %}
+    {% include 'includes/messages.html' %}
+    {% endblock messages %}
+
     <div class="container-md">
 
         {% block content %}
 
-        Lorem ipsum dolor sit amet...
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur
+        optio est esse? Veritatis laborum expedita
+        quibusdam numquam! Expedita amet nisi dolor similique autem, mollitia
+        ipsa et, natus vel explicabo
+        reprehenderit?
 
         {% endblock content %}
     
     </div>
 
-    {% if request.resolver_match.view_name != 'mainapp:mainapp.views.LoginPageView' %}
+    <!-- {% if request.resolver_match.view_name != 'authapp:login' %}
         {% include 'includes/footer.html' %}
-    {% endif %}
+    {% endif %} -->
 
 
     <!-- JavaScript section -->
@@ -58,6 +66,19 @@
     <!-- FontAwesome -->
     <script src="{% static 'js/fontawesome.all.min.js' %}"></script>
 
+    {% block js %}
+    <script>
+      $(document).ready(function () {
+  
+        {% if messages %}
+        // Toasts
+        $(".toast").toast({ delay: 5000 });
+        $(".toast").toast("show");
+        {% endif %}
+  
+      });
+    </script>
+    {% endblock js %}
 
 </body>
 

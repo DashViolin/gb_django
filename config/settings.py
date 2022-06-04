@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "markdownify.apps.MarkdownifyConfig",
+    "social_django",
     "mainapp",
     "authapp",
 ]
@@ -118,8 +119,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = "authapp.CustomUser"
 
-LOGIN_REDIRECT_URL = "mainapp:main_page"
-LOGOUT_REDIRECT_URL = "mainapp:main_page"
+LOGIN_REDIRECT_URL = "mainapp:index"
+
+LOGOUT_REDIRECT_URL = "mainapp:index"
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 

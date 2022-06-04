@@ -42,6 +42,11 @@ def users_avatars_path(instance, filename):
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     username_validator = ASCIIUsernameValidator()
+    objects = UserManager()
+
+    EMAIL_FIELD = "email"
+    USERNAME_FIELD = "username"
+    REQUIRED_FIELDS = ["email"]
 
     username = models.CharField(
         _("username"),
@@ -74,17 +79,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         _("active"),
         default=True,
         help_text=_(
-            "Designates whether this user should be treated as active. \
-            Unselect this instead of deleting accounts."
+            "Designates whether this user should be treated as active. Unselect this instead of deleting accounts."
         ),
     )
     date_joined = models.DateTimeField(_("date joined"), auto_now_add=True)
-
-    objects = UserManager()
-
-    EMAIL_FIELD = "email"
-    USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = ["email"]
 
     class Meta:
         verbose_name = _("user")
