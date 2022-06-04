@@ -119,6 +119,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTHENTICATION_BACKENDS = (
     "social_core.backends.github.GithubOAuth2",
+    "social_core.backends.vk.VKOAuth2",
     "django.contrib.auth.backends.ModelBackend",
 )
 
@@ -128,12 +129,17 @@ LOGIN_REDIRECT_URL = "mainapp:index"
 
 LOGOUT_REDIRECT_URL = "mainapp:index"
 
-MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
-
-# OAuth2 secrets:
+# OAuth2 settings:
 SOCIAL_AUTH_GITHUB_KEY = os.environ.get("SOCIAL_AUTH_GITHUB_KEY")
-
 SOCIAL_AUTH_GITHUB_SECRET = os.environ.get("SOCIAL_AUTH_GITHUB_SECRET")
+SOCIAL_AUTH_GITHUB_SCOPE = ["email"]
+
+SOCIAL_AUTH_VK_OAUTH2_KEY = os.environ.get("SOCIAL_AUTH_VK_OAUTH2_KEY")
+SOCIAL_AUTH_VK_OAUTH2_SECRET = os.environ.get("SOCIAL_AUTH_VK_OAUTH2_SECRET")
+SOCIAL_AUTH_VK_OAUTH2_SCOPE = ["email"]
+
+
+MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
