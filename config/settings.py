@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 
-from django.core.management.utils import get_random_secret_key
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,8 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Load .env
 ENV_PATH = BASE_DIR / "config" / ".env"
 if not os.path.exists(ENV_PATH):
-    with open(ENV_PATH, mode="w", encoding="utf8") as env:
-        env.write(f"DJANGO_KEY='{get_random_secret_key()}'")
+    raise FileExistsError('You must create ".env" file before start application.')
 load_dotenv(ENV_PATH)
 
 
@@ -80,6 +78,8 @@ TEMPLATES = [
                 "django.template.context_processors.media",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "social_django.context_processors.backends",
+                "social_django.context_processors.login_redirect",
             ],
         },
     },
@@ -117,6 +117,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = (
+    "social_core.backends.github.GithubOAuth2",
+    "django.contrib.auth.backends.ModelBackend",
+)
+
 AUTH_USER_MODEL = "authapp.CustomUser"
 
 LOGIN_REDIRECT_URL = "mainapp:index"
@@ -124,6 +129,11 @@ LOGIN_REDIRECT_URL = "mainapp:index"
 LOGOUT_REDIRECT_URL = "mainapp:index"
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
+
+# OAuth2 secrets:
+SOCIAL_AUTH_GITHUB_KEY = os.environ.get("SOCIAL_AUTH_GITHUB_KEY")
+
+SOCIAL_AUTH_GITHUB_SECRET = os.environ.get("SOCIAL_AUTH_GITHUB_SECRET")
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
