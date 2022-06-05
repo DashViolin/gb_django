@@ -1,5 +1,5 @@
 from math import ceil
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from django.shortcuts import get_object_or_404
 from django.views.generic import RedirectView, TemplateView
@@ -9,10 +9,6 @@ from mainapp import models as mainapp_models
 
 class MainPageView(TemplateView):
     template_name: str = "mainapp/index.html"
-
-
-class LoginPageView(TemplateView):
-    template_name: str = "mainapp/login.html"
 
 
 class DocSitePageView(TemplateView):
@@ -77,7 +73,7 @@ class ContactsPageView(TemplateView):
 
 
 class GoogleRedirectView(RedirectView):
-    def get_redirect_url(self, *args, **kwargs) -> str | None:
+    def get_redirect_url(self, *args, **kwargs) -> Optional[str]:
         domain = "https://www.google.com"
         param = self.request.GET["param"]
         self.url = f"{domain}/search?q={param}"
