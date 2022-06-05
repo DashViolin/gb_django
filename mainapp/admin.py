@@ -17,12 +17,10 @@ class LessonAdmin(admin.ModelAdmin):
     get_course_name.short_description = _("Course")
 
     def delete(self, request, queryset):
-        # queryset.update(deleted=True)
         for item in queryset:
             item.delete()
 
     def restore(self, request, queryset):
-        # queryset.update(deleted=False)
         for item in queryset:
             item.restore()
 
@@ -32,4 +30,4 @@ class LessonAdmin(admin.ModelAdmin):
     ordering = ["-course__name", "-num"]
     list_per_page = 5
     list_filter = ["course", "created", "deleted"]
-    actions = [delete.__name__, restore.__name__]
+    actions = ["delete", "restore"]

@@ -17,6 +17,7 @@ urlpatterns = [
     path("news/<int:pk>/delete", views.NewsDeleteView.as_view(), name="news_delete"),
     path("courses/", views.CoursesListView.as_view(), name="courses"),
     path("courses/<int:pk>/", views.CoursesDetailView.as_view(), name="courses_detail"),
+    path("course_feedback/", views.CourseFeedbackFormProcessView.as_view(), name="course_feedback"),
     path("contacts/", views.ContactsPageView.as_view(), name="contacts"),
     path("doc_site/", views.DocSitePageView.as_view(), name="doc_site"),
     path("search-in-google", views.GoogleRedirectView.as_view(), name="search_in_google"),
