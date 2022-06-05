@@ -1,11 +1,13 @@
 import json
 
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class MainappModelManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(deleted=False)
+    # def get_queryset(self):
+    #     return super().get_queryset().filter(deleted=False)
+    pass
 
 
 class MainappBaseModel(models.Model):
@@ -36,6 +38,11 @@ class News(MainappBaseModel):
     def __str__(self) -> str:
         return f"{self.pk} {self.title}"
 
+    class Meta:
+        verbose_name = _("News")
+        verbose_name_plural = _("News")
+        ordering = ("-created",)
+
 
 class Courses(MainappBaseModel):
     name = models.CharField(max_length=256, verbose_name="Name")
@@ -60,6 +67,8 @@ class Lessons(MainappBaseModel):
 
     class Meta:
         ordering = ("course", "num")
+        verbose_name = _("Lesson")
+        verbose_name_plural = _("Lessons")
 
 
 class Teachers(MainappBaseModel):
@@ -70,6 +79,10 @@ class Teachers(MainappBaseModel):
 
     def __str__(self) -> str:
         return f"{self.pk:0>3} {self.name_second} {self.name_first}"
+
+    class Meta:
+        verbose_name = _("Teacher")
+        verbose_name_plural = _("Teachers")
 
 
 contacts_data = json.loads(
