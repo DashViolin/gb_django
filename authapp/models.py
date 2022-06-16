@@ -33,7 +33,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         _("username"),
         max_length=150,
         unique=True,
-        help_text=_("Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."),
+        help_text=_("Required. 150 characters or fewer. ASCII letters and digits only."),
         validators=[username_validator],
         error_messages={
             "unique": _("A user with that username already exists."),
@@ -65,10 +65,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     )
     date_joined = models.DateTimeField(_("date joined"), auto_now_add=True)
 
-    class Meta:
-        verbose_name = _("user")
-        verbose_name_plural = _("users")
-
     def clean(self):
         super().clean()
         self.email = self.__class__.objects.normalize_email(self.email)
@@ -87,3 +83,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def email_user(self, subject, message, from_email=None, **kwargs):
         """Send an email to this user."""
         send_mail(subject, message, from_email, [self.email], **kwargs)
+
+    class Meta:
+        verbose_name = _("user")
+        verbose_name_plural = _("users")

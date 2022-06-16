@@ -1,9 +1,14 @@
-from math import ceil
+from datetime import date
 from typing import Any, Dict, Optional
 
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from django.views.generic import RedirectView, TemplateView
+from django.template.loader import render_to_string
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, RedirectView, TemplateView, UpdateView
 
+from mainapp import forms as mainapp_forms
 from mainapp import models as mainapp_models
 
 
@@ -11,36 +16,72 @@ class MainPageView(TemplateView):
     template_name: str = "mainapp/index.html"
 
 
-class DocSitePageView(TemplateView):
-    template_name: str = "mainapp/doc_site.html"
+class NewsListView(ListView):
+    model = mainapp_models.News
+    paginate_by = 5
+    date_from = ""
+    date_to = ""
 
-
-class NewsPageView(TemplateView):
-    template_name: str = "mainapp/news.html"
-    news_per_page = 5
-
-    def get_context_data(self, **kwargs) -> Dict[str, Any]:
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        news_count = mainapp_models.News.objects.all().count()
-        pages_count = ceil(news_count / self.news_per_page)
-        page = int(self.request.GET.get("page", default="1"))
-        page = page if page > 0 else 1
-        page = page if page <= pages_count else pages_count
-        offset = (page - 1) * self.news_per_page
-        news = mainapp_models.News.objects.all()
-        context["pages"] = range(1, pages_count + 1)
-        context["news_qs"] = news[offset : offset + self.news_per_page]
-        context["current_page"] = page
+        context.update(
+            {
+                "form_data": {
+                    "dateFrom": self.date_from,
+                    "dateTo": self.date_to,
+                }
+            }
+        )
         return context
 
+    def get_queryset(self):
+        query_set = super().get_queryset().filter(deleted=False)
+        if self.date_from and self.date_to:
+            query_set = query_set.filter(
+                created__gt=date.fromisoformat(self.date_from),
+                created__lt=date.fromisoformat(self.date_to),
+            )
+        elif self.date_from:
+            query_set = query_set.filter(created__gt=date.fromisoformat(self.date_from))
+        elif self.date_to:
+            query_set = query_set.filter(created__lt=date.fromisoformat(self.date_to))
+        return query_set
 
-class NewsDetailView(TemplateView):
-    template_name: str = "mainapp/news_detail.html"
+    def get(self, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        context = self.get_context_data()
+        return self.render_to_response(context)
 
-    def get_context_data(self, pk=None, **kwargs) -> Dict[str, Any]:
-        context = super().get_context_data(pk=pk, **kwargs)
-        context["news_object"] = get_object_or_404(mainapp_models.News, pk=pk)
-        return context
+    def post(self, *args, **kwargs):
+        self.date_from = self.request.POST.get("dateFrom", "")
+        self.date_to = self.request.POST.get("dateTo", "")
+        self.object_list = self.get_queryset()
+        context = self.get_context_data()
+        return self.render_to_response(context)
+
+
+class NewsCreateView(PermissionRequiredMixin, CreateView):
+    model = mainapp_models.News
+    fields = "__all__"
+    success_url = reverse_lazy("mainapp:news")
+    permission_required = ("mainapp.add_news",)
+
+
+class NewsUpdateView(PermissionRequiredMixin, UpdateView):
+    model = mainapp_models.News
+    fields = "__all__"
+    success_url = reverse_lazy("mainapp:news")
+    permission_required = ("mainapp.change_news",)
+
+
+class NewsDeleteView(PermissionRequiredMixin, DeleteView):
+    model = mainapp_models.News
+    success_url = reverse_lazy("mainapp:news")
+    permission_required = ("mainapp.delete_news",)
+
+
+class NewsDetailView(DetailView):
+    model = mainapp_models.News
 
 
 class CoursesListView(TemplateView):
@@ -60,7 +101,30 @@ class CoursesDetailView(TemplateView):
         context["course_object"] = get_object_or_404(mainapp_models.Courses, pk=pk)
         context["lessons"] = mainapp_models.Lessons.objects.filter(course=context["course_object"])
         context["teachers"] = mainapp_models.Teachers.objects.filter(course=context["course_object"])
+        if (
+            not self.request.user.is_anonymous
+            and not mainapp_models.CourseFeedback.objects.filter(
+                course=context["course_object"], user=self.request.user
+            ).count()
+        ):
+            context["feedback_form"] = mainapp_forms.CourseFeedbackForm(
+                course=context["course_object"],
+                user=self.request.user,
+            )
+        context["feedback_list"] = mainapp_models.CourseFeedback.objects.filter(
+            course=context["course_object"]
+        ).order_by("-created", "-rating")[:5]
         return context
+
+
+class CourseFeedbackFormProcessView(LoginRequiredMixin, CreateView):
+    model = mainapp_models.CourseFeedback
+    form_class = mainapp_forms.CourseFeedbackForm
+
+    def form_valid(self, form):
+        self.object = form.save()
+        rendered_card = render_to_string("mainapp/includes/feedback_card.html", context={"item": self.object})
+        return JsonResponse({"card": rendered_card})
 
 
 class ContactsPageView(TemplateView):
@@ -70,6 +134,10 @@ class ContactsPageView(TemplateView):
         context = super().get_context_data(**kwargs)
         context["data"] = mainapp_models.contacts_data
         return context
+
+
+class DocSitePageView(TemplateView):
+    template_name: str = "mainapp/doc_site.html"
 
 
 class GoogleRedirectView(RedirectView):
