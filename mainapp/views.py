@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Any, Dict, Optional
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -17,10 +18,46 @@ class MainPageView(TemplateView):
 
 class NewsListView(ListView):
     model = mainapp_models.News
-    news_per_page = 10
+    paginate_by = 5
+    date_from = ""
+    date_to = ""
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(
+            {
+                "form_data": {
+                    "dateFrom": self.date_from,
+                    "dateTo": self.date_to,
+                }
+            }
+        )
+        return context
 
     def get_queryset(self):
-        return super().get_queryset().filter(deleted=False)
+        query_set = super().get_queryset().filter(deleted=False)
+        if self.date_from and self.date_to:
+            query_set = query_set.filter(
+                created__gt=date.fromisoformat(self.date_from),
+                created__lt=date.fromisoformat(self.date_to),
+            )
+        elif self.date_from:
+            query_set = query_set.filter(created__gt=date.fromisoformat(self.date_from))
+        elif self.date_to:
+            query_set = query_set.filter(created__lt=date.fromisoformat(self.date_to))
+        return query_set
+
+    def get(self, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        context = self.get_context_data()
+        return self.render_to_response(context)
+
+    def post(self, *args, **kwargs):
+        self.date_from = self.request.POST.get("dateFrom", "")
+        self.date_to = self.request.POST.get("dateTo", "")
+        self.object_list = self.get_queryset()
+        context = self.get_context_data()
+        return self.render_to_response(context)
 
 
 class NewsCreateView(PermissionRequiredMixin, CreateView):
