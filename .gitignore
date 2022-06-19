@@ -2,7 +2,16 @@
 media/*/
 
 # Data files:
-data/*/
+data/cache/*
+!data/cache/.gitkeep
+data/rabbitmq/data/*
+!data/rabbitmq/data/.gitkeep
+data/rabbitmq/log/*
+!data/rabbitmq/log/.gitkeep
+
+# Log files:
+var/log/*
+!var/log/.gitkeep
 
 # Potery
 poetry.lock
@@ -121,7 +130,6 @@ lib/
 lib64/
 parts/
 sdist/
-var/
 wheels/
 pip-wheel-metadata/
 share/python-wheels/

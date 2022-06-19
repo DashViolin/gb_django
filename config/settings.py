@@ -102,7 +102,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "data" / "db.sqlite3",
+        "NAME": BASE_DIR / "data" / "database" / "db.sqlite3",
     }
 }
 
@@ -221,7 +221,11 @@ CACHES = {
     }
 }
 
-CELERY_BROKER_URL = "redis://localhost:6379"
+# CELERY_BROKER_URL = "redis://localhost:6379"
+# CELERY_BROKER_URL = 'amqp: // myuser: пароль @ serverip: 5672 / vhost'
+CELERY_BROKER_URL = (
+    f'amqp://{os.environ.get("RABBITMQ_DEFAULT_USER")}:{os.environ.get("RABBITMQ_DEFAULT_PASS")}@localhost'
+)
 CELERY_RESULT_BACKEND = "redis://localhost:6379"
 
 
