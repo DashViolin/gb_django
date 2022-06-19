@@ -1,6 +1,9 @@
 # Media files:
 media/*/
 
+# Data files:
+data/*/
+
 # Potery
 poetry.lock
 
