@@ -39,7 +39,8 @@ ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split()
 
 if DEBUG:
     INTERNAL_IPS = [
-        "192.168.1.4",
+        "192.168.88.164",
+        "192.168.88.239",
         "127.0.0.1",
     ]
 
@@ -215,7 +216,7 @@ LOGGING = {
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379",
+        "LOCATION": f'redis://:{os.environ.get("REDIS_PASSWORD")}@localhost:{os.environ.get("REDIS_PORT")}/1',
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
@@ -231,17 +232,24 @@ class AMQP:
 
 
 CELERY_BROKER_URL = f"amqp://{AMQP.user}:{AMQP.passwd}@localhost/{AMQP.vhost}"
-# CELERY_BROKER_URL = f'redis://:{os.environ.get("REDIS_PASSWORD")}@localhost:{os.environ.get("REDIS_PORT")}/1'
 
-CELERY_RESULT_BACKEND = f'redis://:{os.environ.get("REDIS_PASSWORD")}@localhost:{os.environ.get("REDIS_PORT")}/1'
+# CELERY_BROKER_URL = f'redis://:{os.environ.get("REDIS_PASSWORD")}@localhost:{os.environ.get("REDIS_PORT")}/2'
+# CELERY_BROKER_URL = f'redis://localhost:{os.environ.get("REDIS_PORT")}/2'
+
+CELERY_RESULT_BACKEND = f'redis://:{os.environ.get("REDIS_PASSWORD")}@localhost:{os.environ.get("REDIS_PORT")}/2'
+# CELERY_RESULT_BACKEND = f'redis://localhost:{os.environ.get("REDIS_PORT")}/2'
+
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
-EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = "dasha.erminski@gmail.com"
-EMAIL_HOST_PASSWORD = "kvwwbhupyxtxwamn"
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = "techsupport@braniac.com"
 
-# For debugging: python -m smtpd -n -c DebuggingServer localhost:25
+DEFAULT_SUPPORT_EMAIL = f"{EMAIL_HOST_USER}@gmail.com"
+
 # EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 # EMAIL_FILE_PATH = "var/email-messages/"

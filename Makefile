@@ -6,14 +6,16 @@ GREEN=\033[4;92m
 RED=\033[0;31m
 NC=\033[0m
 WORK_DIR=$(shell pwd)
+DOCKER_USER=$(shell whoami)
 
 djkey:
 	python -c "from django.core.management.utils import get_random_secret_key;print(get_random_secret_key())"
 
 install:
 	sudo apt install python3-pip python3-poetry docker.io docker-compose -y 
+	sudo usermod -aG docker ${DOCKER_USER}
 	sudo systemctl enable docker
-	sudo systemctl start docker
+	sudo systemctl restart docker
 	sudo docker pull redis
 	sudo docker pull celery
 	sudo docker pull rabbitmq:3-management
@@ -36,6 +38,8 @@ prepare-to-up:
 	# chmod -R 775 ./data/rabbitmq
 
 purge-data:
+	rm -rf ./var/log/*
+	rm -rf ./var/email-messages/*
 	sudo rm -rf ./data/cache/*
 	sudo rm -rf ./data/rabbitmq/data/*
 	sudo rm -rf ./data/rabbitmq/log/*
@@ -53,16 +57,23 @@ containers-down:
 #	docker rm -fv rabbitmq
 	docker-compose -f stack.yml down
 
+fix-docker-permission-denied:
+	sudo aa-remove-unknown
+
 runserver:
 	./manage.py runserver 0.0.0.0:8000 --insecure
 
 celery:
 	celery -A config worker -l info
 
+down-force: fix-docker-permission-denied down
+
 up: prepare-to-up purge-data containers-up
 
 up-verbose: prepare-to-up purge-data containers-up-verbose
 
 down: containers-down purge-data
+
+reset: down up
 
 start: runserver
