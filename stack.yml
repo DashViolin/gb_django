@@ -18,9 +18,8 @@ services:
     container_name: redis
     restart: always
     ports:
-      - '6379:6379'
-    # command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
-    command: redis-server --save 20 1 --loglevel warning
+      - '${REDIS_PORT}:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
     volumes:
       - ./data/cache:/data
 
@@ -31,11 +30,12 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+      - RABBITMQ_DEFAULT_VHOST=${RABBITMQ_DEFAULT_VHOST}
     ports:
       # The standard AMQP protocol port
-      - '5672:5672'
+      - '${RABBITMQ_AMQP_PORT}:5672'
       # HTTP management UI
-      - '8080:15672'
+      - '${RABBITMQ_MGMT_PORT}:15672'
     command: ["bash", "-c", "chmod 400 /var/lib/rabbitmq/.erlang.cookie; rabbitmq-server"]
     volumes:
       - ./data/rabbitmq/data:/var/lib/rabbitmq

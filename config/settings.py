@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 import os
+from dataclasses import dataclass
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -221,29 +222,26 @@ CACHES = {
     }
 }
 
-# CELERY_BROKER_URL = "redis://localhost:6379"
-# CELERY_BROKER_URL = 'amqp: // myuser: пароль @ serverip: 5672 / vhost'
-CELERY_BROKER_URL = (
-    f'amqp://{os.environ.get("RABBITMQ_DEFAULT_USER")}:{os.environ.get("RABBITMQ_DEFAULT_PASS")}@localhost'
-)
-CELERY_RESULT_BACKEND = "redis://localhost:6379"
+
+@dataclass
+class AMQP:
+    user = os.environ.get("RABBITMQ_DEFAULT_USER")
+    passwd = os.environ.get("RABBITMQ_DEFAULT_PASS")
+    vhost = os.environ.get("RABBITMQ_DEFAULT_VHOST")
 
 
-# Read about sending email:
-#   https://docs.djangoproject.com/en/3.2/topics/email/
+CELERY_BROKER_URL = f"amqp://{AMQP.user}:{AMQP.passwd}@localhost/{AMQP.vhost}"
+# CELERY_BROKER_URL = f'redis://:{os.environ.get("REDIS_PASSWORD")}@localhost:{os.environ.get("REDIS_PORT")}/1'
 
-# Full list of email settings:
-#   https://docs.djangoproject.com/en/3.2/ref/settings/#email
-# EMAIL_HOST = "localhost"
-# EMAIL_PORT = "25"
+CELERY_RESULT_BACKEND = f'redis://:{os.environ.get("REDIS_PASSWORD")}@localhost:{os.environ.get("REDIS_PORT")}/1'
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "dasha.erminski@gmail.com"
+EMAIL_HOST_PASSWORD = "kvwwbhupyxtxwamn"
 
 # For debugging: python -m smtpd -n -c DebuggingServer localhost:25
-# EMAIL_HOST_USER = "django@geekshop.local"
-# EMAIL_HOST_PASSWORD = "geekshop"
-# EMAIL_USE_SSL = False
-# If server support TLS:
-# EMAIL_USE_TLS = True
-
-# Email as files for debug
-EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
-EMAIL_FILE_PATH = "var/email-messages/"
+# EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+# EMAIL_FILE_PATH = "var/email-messages/"
