@@ -22,6 +22,7 @@ black = "^22.3.0"
 autoflake = "^1.4"
 autopep8 = "^1.6.0"
 pytest-django = "^4.5.2"
+selenium = "^4.3.0"
 
 [tool.black]
 line-length = 120

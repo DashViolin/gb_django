@@ -28,7 +28,7 @@ reset-db:
 	echo "\n ${GREEN}Superuser ${DJANGO_SUPERUSER_USERNAME} created${NC}\n"
 	python manage.py loaddata 001_news 002_courses 003_lessons 004_teachers
 
-prepare-to-up:
+prepare-folders:
 	mkdir -p ./data/cache
 	mkdir -p ./data/rabbitmq/data
 	mkdir -p ./data/rabbitmq/log
@@ -66,13 +66,15 @@ runserver:
 celery:
 	celery -A config worker -l info
 
-down-force: fix-docker-permission-denied down
+trans:
+	./manage.py mm
+	./manage.py cm
 
-up: prepare-to-up purge-data containers-up
-
-up-verbose: prepare-to-up purge-data containers-up-verbose
+up: trans prepare-folders purge-data reset-db containers-up celery
 
 down: containers-down purge-data
+
+down-force: fix-docker-permission-denied down
 
 reset: down up
 

@@ -27,8 +27,7 @@
             <p class="card-text">{{ item.preambule }}</p>
             <div class="row">
               <div class="col">
-                <a href="{% url 'mainapp:news_detail' pk=item.pk %}"
-                  class="card-link">Подробнее</a>
+                <a href="{% url 'mainapp:news_detail' pk=item.pk %}" class="card-link">Подробнее</a>
               </div>
               {% if perms.mainapp.change_news %}
               <div class="col-1 text-center">

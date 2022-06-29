@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-29 16:28+0300\n"
+"POT-Creation-Date: 2022-06-30 08:39+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,6 +37,12 @@ msgstr "имя"
 
 msgid "last name"
 msgstr "фамилия"
+
+msgid "age"
+msgstr "возраст"
+
+msgid "avatar"
+msgstr "аватар"
 
 msgid "email address"
 msgstr "электронная почта"
@@ -73,6 +79,9 @@ msgstr "пользователи"
 msgid "Login success!<br>Hi, %(username)s"
 msgstr "Успешный вход в систему!<br>Здравствуйте, %(username)s"
 
+msgid "Something goes worng"
+msgstr "Что-то пошло не так"
+
 msgid "See you later!"
 msgstr "Увидимся позже!"
 
@@ -91,8 +100,44 @@ msgstr "Введите ваше сообщение"
 msgid "Message"
 msgstr "Сообщение"
 
+msgid "Created"
+msgstr "Создано"
+
+msgid "Updated"
+msgstr "Обновлено"
+
+msgid "Deleted"
+msgstr "Удалено"
+
+msgid "Title"
+msgstr "Название"
+
+msgid "Preambule"
+msgstr "Преамбула"
+
+msgid "Body"
+msgstr "Содержание"
+
+msgid "As markdown"
+msgstr "В формате markdown"
+
 msgid "News"
 msgstr "Новости"
+
+msgid "Name"
+msgstr "Имя"
+
+msgid "Description"
+msgstr "Описание"
+
+msgid "Cost"
+msgstr "Цена"
+
+msgid "Cover"
+msgstr "Обложка"
+
+msgid "Courses"
+msgstr "Курсы"
 
 msgid "User"
 msgstr "Пользователь"
@@ -105,6 +150,9 @@ msgstr "Отзывы"
 
 msgid "Rating"
 msgstr "Рейтинг"
+
+msgid "Lesson number"
+msgstr "Номер урока"
 
 msgid "Lesson"
 msgstr "Урок"
@@ -119,7 +167,7 @@ msgid "Teachers"
 msgstr "Учителя"
 
 msgid "No feedback yet. Be first!"
-msgstr ""
+msgstr "Пока нет отзывов. Оставьте его первым!"
 
 msgid "Message sended"
 msgstr "Сообщение отправлено"
@@ -130,19 +178,12 @@ msgstr "Вы можете отправить сообещение не чаще 
 msgid "Django site admin"
 msgstr "Сайт администрирования Django"
 
-msgid "Courses"
-msgstr "Курсы"
-
 msgid "Profile"
 msgstr "Профили"
 
-#, fuzzy
-#| msgid "Profile"
 msgid "Profile Edit"
 msgstr "Редактирование профиля"
 
-#, fuzzy
-#| msgid "Courses"
 msgid "My courses"
 msgstr "Мои курсы"
 

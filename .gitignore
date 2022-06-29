@@ -11,6 +11,7 @@ data/rabbitmq/log/*
 
 # Log files:
 var/
+!var/selenium/
 
 # Potery
 poetry.lock
