@@ -64,6 +64,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -164,6 +165,7 @@ USE_L10N = True
 
 USE_TZ = True
 
+LOCALE_PATHS = [BASE_DIR / "locale"]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
@@ -213,16 +215,6 @@ LOGGING = {
     },
 }
 
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": f'redis://:{os.environ.get("REDIS_PASSWORD")}@localhost:{os.environ.get("REDIS_PORT")}/1',
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        },
-    }
-}
-
 
 @dataclass
 class AMQP:
@@ -231,13 +223,27 @@ class AMQP:
     vhost = os.environ.get("RABBITMQ_DEFAULT_VHOST")
 
 
+@dataclass
+class REDIS:
+    passwd = os.environ.get("REDIS_PASSWORD")
+    port = os.environ.get("REDIS_PORT")
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": f"redis://:{REDIS.passwd}@localhost:{REDIS.port}/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    }
+}
+
 CELERY_BROKER_URL = f"amqp://{AMQP.user}:{AMQP.passwd}@localhost/{AMQP.vhost}"
+# CELERY_BROKER_URL = f'redis://:{REDIS.passwd}@localhost:{REDIS.port}/2'
 
-# CELERY_BROKER_URL = f'redis://:{os.environ.get("REDIS_PASSWORD")}@localhost:{os.environ.get("REDIS_PORT")}/2'
-# CELERY_BROKER_URL = f'redis://localhost:{os.environ.get("REDIS_PORT")}/2'
-
-CELERY_RESULT_BACKEND = f'redis://:{os.environ.get("REDIS_PASSWORD")}@localhost:{os.environ.get("REDIS_PORT")}/2'
-# CELERY_RESULT_BACKEND = f'redis://localhost:{os.environ.get("REDIS_PORT")}/2'
+CELERY_RESULT_BACKEND = f"redis://:{REDIS.passwd}@localhost:{REDIS.port}/2"
+# CELERY_RESULT_BACKEND = f'redis://localhost:{REDIS.port)}/2'
 
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
@@ -253,3 +259,5 @@ DEFAULT_SUPPORT_EMAIL = f"{EMAIL_HOST_USER}@gmail.com"
 
 # EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 # EMAIL_FILE_PATH = "var/email-messages/"
+
+SELENIUM_DRIVER_PATH_FF = BASE_DIR / "var" / "selenium" / "geckodriver"

@@ -136,6 +136,14 @@ class CoursesDetailView(TemplateView):
                 .select_related()
             )
             cache.set(f"feedback_list_{pk}", context["feedback_list"], timeout=300)  # 5 minutes
+
+            # Archive object for tests --->
+            # import pickle
+
+            # with open(f"mainapp/fixtures/005_feedback_list_{pk}.bin", "wb") as outf:
+            #     pickle.dump(context["feedback_list"], outf)
+            # <--- Archive object for tests
+
         else:
             context["feedback_list"] = cached_feedback
 
@@ -169,7 +177,7 @@ class ContactsPageView(TemplateView):
                 cache.set(
                     f"mail_feedback_lock_{self.request.user.pk}",
                     "lock",
-                    timeout=1,
+                    timeout=300,
                 )
                 messages.add_message(self.request, messages.INFO, _("Message sended"))
                 mainapp_tasks.send_feedback_mail.delay(

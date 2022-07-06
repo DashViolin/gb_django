@@ -14,9 +14,9 @@ class MainappModelManager(models.Manager):
 class MainappBaseModel(models.Model):
     objects = MainappModelManager()
 
-    created = models.DateTimeField(auto_now_add=True, verbose_name="Created", editable=False)
-    updated = models.DateTimeField(auto_now=True, verbose_name="Updated", editable=False)
-    deleted = models.BooleanField(default=False, verbose_name="Deleted")
+    created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"), editable=False)
+    updated = models.DateTimeField(auto_now=True, verbose_name=_("Updated"), editable=False)
+    deleted = models.BooleanField(default=False, verbose_name=_("Deleted"))
 
     def delete(self, *args):
         self.deleted = True
@@ -31,10 +31,10 @@ class MainappBaseModel(models.Model):
 
 
 class News(MainappBaseModel):
-    title = models.CharField(max_length=256, verbose_name="Title")
-    preambule = models.CharField(max_length=1024, verbose_name="Preambule")
-    body = models.TextField(blank=True, null=True, verbose_name="Body")
-    body_as_markdown = models.BooleanField(default=False, verbose_name="As markdown")
+    title = models.CharField(max_length=256, verbose_name=_("Title"))
+    preambule = models.CharField(max_length=1024, verbose_name=_("Preambule"))
+    body = models.TextField(blank=True, null=True, verbose_name=_("Body"))
+    body_as_markdown = models.BooleanField(default=False, verbose_name=_("As markdown"))
 
     def __str__(self) -> str:
         return f"{self.pk} {self.title}"
@@ -46,14 +46,18 @@ class News(MainappBaseModel):
 
 
 class Courses(MainappBaseModel):
-    name = models.CharField(max_length=256, verbose_name="Name")
-    description = models.TextField(blank=True, null=True, verbose_name="Description")
-    description_as_markdown = models.BooleanField(default=False, verbose_name="As markdown")
-    cost = models.DecimalField(max_digits=8, decimal_places=2, default=0, verbose_name="Cost")
-    cover = models.CharField(max_length=25, default="no_image.svg", verbose_name="Cover")
+    name = models.CharField(max_length=256, verbose_name=_("Name"))
+    description = models.TextField(blank=True, null=True, verbose_name=_("Description"))
+    description_as_markdown = models.BooleanField(default=False, verbose_name=_("As markdown"))
+    cost = models.DecimalField(max_digits=8, decimal_places=2, default=0, verbose_name=_("Cost"))
+    cover = models.CharField(max_length=25, default="no_image.svg", verbose_name=_("Cover"))
 
     def __str__(self) -> str:
         return f"{self.pk} {self.name}"
+
+    class Meta:
+        verbose_name = _("Course")
+        verbose_name_plural = _("Courses")
 
 
 class CourseFeedback(MainappBaseModel):
@@ -69,10 +73,10 @@ class CourseFeedback(MainappBaseModel):
 
 class Lessons(MainappBaseModel):
     course = models.ForeignKey(Courses, on_delete=models.CASCADE)
-    num = models.PositiveIntegerField(verbose_name="Lesson number")
-    title = models.CharField(max_length=256, verbose_name="Title")
-    description = models.TextField(blank=True, null=True, verbose_name="Description")
-    description_as_markdown = models.BooleanField(default=False, verbose_name="As markdown")
+    num = models.PositiveIntegerField(verbose_name=_("Lesson number"))
+    title = models.CharField(max_length=256, verbose_name=_("Title"))
+    description = models.TextField(blank=True, null=True, verbose_name=_("Description"))
+    description_as_markdown = models.BooleanField(default=False, verbose_name=_("As markdown"))
 
     def __str__(self) -> str:
         return f"{self.course.name} | {self.num} | {self.title}"

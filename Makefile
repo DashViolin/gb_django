@@ -8,11 +8,12 @@ NC=\033[0m
 WORK_DIR=$(shell pwd)
 DOCKER_USER=$(shell whoami)
 
+
 djkey:
 	python -c "from django.core.management.utils import get_random_secret_key;print(get_random_secret_key())"
 
 install:
-	sudo apt install python3-pip python3-poetry docker.io docker-compose -y 
+	sudo apt install python3-pip python3-poetry python3-cachecontrol docker.io docker-compose gettext -y 
 	sudo usermod -aG docker ${DOCKER_USER}
 	sudo systemctl enable docker
 	sudo systemctl restart docker
@@ -28,7 +29,7 @@ reset-db:
 	echo "\n ${GREEN}Superuser ${DJANGO_SUPERUSER_USERNAME} created${NC}\n"
 	python manage.py loaddata 001_news 002_courses 003_lessons 004_teachers
 
-prepare-to-up:
+prepare-folders:
 	mkdir -p ./data/cache
 	mkdir -p ./data/rabbitmq/data
 	mkdir -p ./data/rabbitmq/log
@@ -41,8 +42,10 @@ purge-data:
 	rm -rf ./var/log/*
 	rm -rf ./var/email-messages/*
 	sudo rm -rf ./data/cache/*
-	sudo rm -rf ./data/rabbitmq/data/*
 	sudo rm -rf ./data/rabbitmq/log/*
+	sudo rm -rf ./data/rabbitmq/data/*
+	sudo rm -rf ./data/rabbitmq/data/.erlang.cookie
+	
 
 containers-up:
 #	docker run -d --hostname redis --name redis -p 6379:6379 -v ${WORK_DIR}/data/cache:/data redis redis-server --save 20 1 --loglevel warning
@@ -66,13 +69,15 @@ runserver:
 celery:
 	celery -A config worker -l info
 
-down-force: fix-docker-permission-denied down
+trans:
+	./manage.py mm
+	./manage.py cm
 
-up: prepare-to-up purge-data containers-up
-
-up-verbose: prepare-to-up purge-data containers-up-verbose
+up: trans prepare-folders purge-data reset-db containers-up celery
 
 down: containers-down purge-data
+
+down-force: fix-docker-permission-denied down
 
 reset: down up
 

@@ -13,7 +13,25 @@
           <p class="card-text">
             {{ object.body }}
           </p>
-          <a href="{% url 'mainapp:news' %}" class="btn btn-primary">Назад</a>
+          <div class="row">
+            <div class="col">
+              <a href="{% url 'mainapp:news' %}" class="btn btn-primary">Назад</a>
+            </div>
+            {% if perms.mainapp.change_news %}
+            <div class="col-1 text-center">
+              <a href="{% url 'mainapp:news_update' pk=object.pk %}">
+                <i class="far fa-edit"></i>
+              </a>
+            </div>
+            {% endif %}
+            {% if perms.mainapp.delete_news %}
+            <div class="col-1 text-center">
+              <a href="{% url 'mainapp:news_delete' pk=object.pk %}">
+                <i class="far fa-trash-alt"></i>
+              </a>
+            </div>
+            {% endif %}
+          </div>
         </div>
       </div>
     </div>

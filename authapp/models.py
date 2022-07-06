@@ -41,8 +41,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     )
     first_name = models.CharField(_("first name"), max_length=150, blank=True)
     last_name = models.CharField(_("last name"), max_length=150, blank=True)
-    age = models.PositiveIntegerField(blank=True, null=True)
-    avatar = models.ImageField(upload_to=users_avatars_path, blank=True, null=True)
+    age = models.PositiveIntegerField(_("age"), blank=True, null=True)
+    avatar = models.ImageField(_("avatar"), upload_to=users_avatars_path, blank=True, null=True)
     email = models.CharField(
         _("email address"),
         max_length=256,
@@ -70,9 +70,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         self.email = self.__class__.objects.normalize_email(self.email)
 
     def get_full_name(self):
-        """
-        Return the first_name plus the last_name, with a space in between.
-        """
+        """Return the first_name plus the last_name, with a space in between."""
         full_name = "%s %s" % (self.first_name, self.last_name)
         return full_name.strip()
 
