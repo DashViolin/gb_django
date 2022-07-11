@@ -17,6 +17,7 @@ install:
 	sudo usermod -aG docker ${DOCKER_USER}
 	sudo systemctl enable docker
 	sudo systemctl restart docker
+	sudo docker pull postgres
 	sudo docker pull redis
 	sudo docker pull celery
 	sudo docker pull rabbitmq:3-management
