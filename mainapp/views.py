@@ -34,6 +34,9 @@ class MainPageView(TemplateView):
     template_name: str = "mainapp/index.html"
 
 
+# TODO: починить фильтрацию.
+# Не удалось решить проблему с пагинацией при фильтрации новостей в рамках одной вьюхи. При переключении страницы
+# фильтры сбрасываются. Костыль в виде сохранения стейта внутри вьюхи (self.date_from, self.date_to) не решил проблему.
 class NewsListView(ListView):
     model = mainapp_models.News
     paginate_by = 5
