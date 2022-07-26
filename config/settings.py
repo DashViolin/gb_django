@@ -20,29 +20,29 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load .env
-ENV_PATH = BASE_DIR / "config" / ".env"
-if not os.path.exists(ENV_PATH):
-    raise FileExistsError('You must create ".env" file before start application.')
-load_dotenv(ENV_PATH)
+ENV_PATH = BASE_DIR / ".env"
+
+if ENV_PATH.exists:
+    load_dotenv(ENV_PATH)
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("DJANGO_KEY")
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
+
+if not SECRET_KEY:
+    raise ValueError("Set valid DJANGO_SECRET_KEY environment variable")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split()
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split()
+DEBUG = bool(int(os.environ.get("DJANGO_DEBUG_MODE", default="0")))
 
 if DEBUG:
-    INTERNAL_IPS = [
-        "192.168.88.164",
-        "192.168.88.239",
-        "127.0.0.1",
-    ]
+    INTERNAL_IPS = os.environ.get("DJANGO_DEBUG_INTERNAL_IPS").split()
+
 
 # Application definition
 
@@ -220,6 +220,7 @@ LOGGING = {
 class AMQP:
     user = os.environ.get("RABBITMQ_DEFAULT_USER")
     passwd = os.environ.get("RABBITMQ_DEFAULT_PASS")
+    host = os.environ.get("RABBITMQ_HOST")
     vhost = os.environ.get("RABBITMQ_DEFAULT_VHOST")
 
 
@@ -227,24 +228,21 @@ class AMQP:
 class REDIS:
     passwd = os.environ.get("REDIS_PASSWORD")
     port = os.environ.get("REDIS_PORT")
+    host = os.environ.get("REDIS_HOST")
 
 
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": f"redis://:{REDIS.passwd}@localhost:{REDIS.port}/1",
+        "LOCATION": f"redis://:{REDIS.passwd}@{REDIS.host}:{REDIS.port}/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
     }
 }
+CELERY_BROKER_URL = f"amqp://{AMQP.user}:{AMQP.passwd}@{AMQP.host}/{AMQP.vhost}"
 
-CELERY_BROKER_URL = f"amqp://{AMQP.user}:{AMQP.passwd}@localhost/{AMQP.vhost}"
-# CELERY_BROKER_URL = f'redis://:{REDIS.passwd}@localhost:{REDIS.port}/2'
-
-CELERY_RESULT_BACKEND = f"redis://:{REDIS.passwd}@localhost:{REDIS.port}/2"
-# CELERY_RESULT_BACKEND = f'redis://localhost:{REDIS.port)}/2'
-
+CELERY_RESULT_BACKEND = f"redis://:{REDIS.passwd}@{REDIS.host}:{REDIS.port}/2"
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
@@ -261,3 +259,4 @@ DEFAULT_SUPPORT_EMAIL = f"{EMAIL_HOST_USER}@gmail.com"
 # EMAIL_FILE_PATH = "var/email-messages/"
 
 SELENIUM_DRIVER_PATH_FF = BASE_DIR / "var" / "selenium" / "geckodriver"
+SELENIUM_LOG_PATH_FF = BASE_DIR / "var" / "selenium" / "geckodriver.log"

@@ -1,10 +1,7 @@
 #!make
-include config/.env
+include ./.env
 export
 
-GREEN=\033[4;92m
-RED=\033[0;31m
-NC=\033[0m
 WORK_DIR=$(shell pwd)
 DOCKER_USER=$(shell whoami)
 
@@ -15,19 +12,17 @@ djkey:
 install:
 	sudo apt install python3-pip python3-poetry python3-cachecontrol docker.io docker-compose gettext -y 
 	sudo usermod -aG docker ${DOCKER_USER}
-	sudo systemctl enable docker
-	sudo systemctl restart docker
+	sudo systemctl enable docker && sudo systemctl restart docker
+	sudo docker pull postgres
+	sudo docker pull adminer
 	sudo docker pull redis
-	sudo docker pull celery
+	sudo docker pull nginx
 	sudo docker pull rabbitmq:3-management
 	poetry install
 
 reset-db:
+	sudo rm -rf ./data/database/pg_data/*
 	rm -f ./data/database/db.sqlite3
-	python manage.py migrate
-	echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser($(DJANGO_SUPERUSER_USERNAME), $(DJANGO_SUPERUSER_EMAIL), $(DJANGO_SUPERUSER_PASSWORD))" | python manage.py shell
-	echo "\n ${GREEN}Superuser ${DJANGO_SUPERUSER_USERNAME} created${NC}\n"
-	python manage.py loaddata 001_news 002_courses 003_lessons 004_teachers
 
 prepare-folders:
 	mkdir -p ./data/cache
@@ -41,6 +36,8 @@ prepare-folders:
 purge-data:
 	rm -rf ./var/log/*
 	rm -rf ./var/email-messages/*
+	sudo rm -rf ./static/admin
+	sudo rm -rf ./static/debug_toolbar
 	sudo rm -rf ./data/cache/*
 	sudo rm -rf ./data/rabbitmq/log/*
 	sudo rm -rf ./data/rabbitmq/data/*
@@ -64,21 +61,29 @@ fix-docker-permission-denied:
 	sudo aa-remove-unknown
 
 runserver:
-	./manage.py runserver 0.0.0.0:8000 --insecure
+	./manage.py runserver 0.0.0.0:8000 --insecuree
 
-celery:
-	celery -A config worker -l info
+ip:
+	docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' web
+	docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx
+	docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' celery
+	docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' redis
+	docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' rabbitmq
+	docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' postgres
+	docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' adminer
 
 trans:
 	./manage.py mm
 	./manage.py cm
 
-up: trans prepare-folders purge-data reset-db containers-up celery
+up: trans prepare-folders purge-data reset-db containers-up
 
 down: containers-down purge-data
 
 down-force: fix-docker-permission-denied down
 
 reset: down up
+
+reset-build: down up-build
 
 start: runserver
