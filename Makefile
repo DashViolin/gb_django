@@ -10,6 +10,8 @@ djkey:
 	python -c "from django.core.management.utils import get_random_secret_key;print(get_random_secret_key())"
 
 install:
+	sudo apt update && sudo apt upgrade -y
+	sudo apt install python-is-python3
 	sudo apt install python3-pip python3-poetry python3-cachecontrol docker.io docker-compose gettext -y 
 	sudo usermod -aG docker ${DOCKER_USER}
 	sudo systemctl enable docker && sudo systemctl restart docker
@@ -18,7 +20,7 @@ install:
 	sudo docker pull redis
 	sudo docker pull nginx
 	sudo docker pull rabbitmq:3-management
-	poetry install
+	poetry install --no-dev
 
 reset-db:
 	sudo rm -rf ./data/database/pg_data/*
@@ -28,10 +30,8 @@ prepare-folders:
 	mkdir -p ./data/cache
 	mkdir -p ./data/rabbitmq/data
 	mkdir -p ./data/rabbitmq/log
-	# chown -R lxd:user ./data/cache
-	# chown -R lxd:user ./data/rabbitmq
-	# chmod -R 775 ./data/cache
-	# chmod -R 775 ./data/rabbitmq
+	sudo chown -R django:lxd ./var
+	sudo chown -R django:lxd ./data
 
 purge-data:
 	rm -rf ./var/log/*
