@@ -18,6 +18,12 @@ else:
 # Кэш для News пришлось убрать, так как состояние новостей кэшируются вместе с контролами при первом посещении станицы
 # и не обновляется после смены статуса пользователя (авторизован/не авторизован).
 
+if settings.DEBUG:
+    cache_time = 60 * 5  # 5 minutes
+else:
+    cache_time = 0
+
+
 urlpatterns = [
     path("", RedirectView.as_view(url="index")),
     path("index", views.MainPageView.as_view(), name="index"),

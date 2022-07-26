@@ -240,11 +240,9 @@ CACHES = {
         },
     }
 }
-
 CELERY_BROKER_URL = f"amqp://{AMQP.user}:{AMQP.passwd}@{AMQP.host}/{AMQP.vhost}"
 
 CELERY_RESULT_BACKEND = f"redis://:{REDIS.passwd}@{REDIS.host}:{REDIS.port}/2"
-
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
